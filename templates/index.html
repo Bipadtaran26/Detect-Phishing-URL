@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PhishGuard - URL Detector</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo-img">
+        <span class="logo-text">Indian Cyber Security Solution</span>
+    </div>
+
+    <ul class="menu">
+        <li><a href="/" style="color:white;">Home</a></li>
+        <li><a class="nav-link text-white text-center text-lg-start" href="#" role="button">Service</a></li>
+        <li><a href="https://greenfellowitsecuritysolutions.com/" style="color:white;">Cyber Lab</a></li>
+        <li><a href="https://indiancybersecuritysolutions.com/about-us/" style="color:white;">About</a></li>
+        <li><a href="https://indiancybersecuritysolutions.com/contact-us/" style="color:white;">Contact</a></li>
+    </ul>
+</nav>
+<!-- HERO SECTION -->
+<section class="hero">
+    <canvas id="canvas-network"></canvas>
+    <h1>Stop Cyber Threats Before They Strike.</h1>
+
+    <p>
+        Verify suspicious links instantly with our Machine Learning-powered
+        phishing detection tool. Your first line of defense against cyber fraud.
+    </p>
+
+    <div class="search-box">
+        <input type="text" id="urlInput" placeholder="Paste the suspicious URL or link here (e.g., https://example.com)">
+        <button onclick="checkPhishing()">Verify Link</button>
+    </div>
+
+</section>
+
+
+<!-- RESULT SECTION -->
+<div class="container">
+
+<div id="loading" class="hidden">
+    <div class="spinner"></div>
+    <p>Analyzing URL structure...</p>
+</div>
+
+<div id="result" class="hidden">
+
+    <div class="score-card">
+        <h2 id="statusText">Status</h2>
+
+        <div class="score-circle" id="scoreCircle">
+            <span id="scoreValue">0</span>%
+        </div>
+    </div>
+
+    <div class="analysis-box">
+
+ <h3>Analysis Details</h3>
+
+<ul id="warningsList"></ul>
+
+</div>
+
+</div>
+
+</div>
+<section class="how-it-works">
+        <div class="section-title">
+            <h2>How It Works</h2>
+            <div class="underline"></div>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3>URL Analysis</h3>
+                <p>We check domain age, SSL certificates, and URL entropy to find red flags.</p>
+            </div>
+            <div class="step-card">
+                <div class="icon-circle"><i class="fa-solid fa-brain"></i></div>
+                <h3>ML Prediction</h3>
+                <p>Our Machine Learning model predicts the risk based on 30+ unique features.</p>
+            </div>
+            <div class="step-card">
+                <div class="icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Real-time Verdict</h3>
+                <p>Instant results provided with a safety score and specific threat warnings.</p>
+            </div>
+        </div>
+    </section>
+<footer class="footer">
+
+<p >© 2026 PhishSecure | <a href="https://indiancybersecuritysolutions.com/" style="color:white;">Trusted by Indian Cyber Security Solution</a></p>
+
+</footer>
+
+
+<script>
+
+async function checkPhishing() {
+
+const url = document.getElementById('urlInput').value;
+const resultDiv = document.getElementById('result');
+const loadingDiv = document.getElementById('loading');
+const warningsList = document.getElementById('warningsList');
+
+if (!url) {
+alert("Please enter a URL");
+return;
+}
+
+resultDiv.classList.add('hidden');
+loadingDiv.classList.remove('hidden');
+warningsList.innerHTML = '';
+
+try {
+
+const response = await fetch('/analyze', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ url: url })
+});
+
+const data = await response.json();
+
+loadingDiv.classList.add('hidden');
+resultDiv.classList.remove('hidden');
+
+document.getElementById('statusText').innerText = data.status;
+document.getElementById('statusText').style.color = data.color;
+
+document.getElementById('scoreValue').innerText = data.score;
+
+const circle = document.getElementById('scoreCircle');
+circle.style.borderColor = data.color;
+circle.style.color = data.color;
+
+data.warnings.forEach(warning => {
+const li = document.createElement('li');
+li.innerText = warning;
+warningsList.appendChild(li);
+});
+
+}
+
+catch (error) {
+
+loadingDiv.classList.add('hidden');
+alert("Error analyzing URL");
+
+}
+
+}
+//////////////
+const canvas = document.getElementById('canvas-network');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const particleCount = 80; // Adjust for density
+const connectionDistance = 150;
+
+function init() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+        });
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Bounce off edges
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        // Draw dot
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.5)'; // Matches your #22c55e green
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw lines between nearby dots
+        for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < connectionDistance) {
+                ctx.strokeStyle = `rgba(34, 197, 94, ${1 - dist / connectionDistance})`;
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+        }
+    });
+    requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', init);
+init();
+animate();
+
+</script>
+
+</body>
+</html>
