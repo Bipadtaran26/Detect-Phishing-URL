@@ -11,7 +11,7 @@ import base64
 app = Flask(__name__)
 
 # 🔑 VirusTotal API Key
-VT_API_KEY = "b9c166bd9613b8c62d6bc82b100a1827285aad995034c9160963f7c7a6fef8ed"
+
 
 # suspicious keywords
 SUSPICIOUS_KEYWORDS = [
